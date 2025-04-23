@@ -4,5 +4,5 @@ services:
   web:
     build: .
     ports:
-      - "80:80"
+      - "89:80"
     container_name: static_web
