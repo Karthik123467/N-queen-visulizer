@@ -1,13 +1,17 @@
-# Use an official Nginx image as a base
-FROM nginx:latest
+# Use an official Node.js image
+FROM node:18-alpine
 
-# Copy your HTML, CSS, and JS files into the Nginx server
-COPY index.html /usr/share/nginx/html/index.html
-COPY styling.css /usr/share/nginx/html/styling.css
-COPY tracking.js /usr/share/nginx/html/tracking.js
+# Create and set working directory
+WORKDIR /app
 
-# Expose port 80 to be able to access the application
-EXPOSE 80
+# Install http-server globally
+RUN npm install -g http-server
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Copy your static files into the container
+COPY . .
+
+# Expose port for http-server (we'll use 8501 inside the container)
+EXPOSE 8080
+
+# Run http-server on port 8501
+CMD ["http-server", "-p", "8080"]
