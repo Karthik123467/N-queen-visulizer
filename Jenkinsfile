@@ -2,43 +2,39 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "mywebapp"
-        CONTAINER_NAME = "mywebapp-container"
-        PORT = "88"
-        HOST_PORT = "88"
+        IMAGE_NAME = 'pavan1833/n-visulizer_v1'
+        IMAGE_TAG = 'v1'
+        CONTAINER_NAME = 'n-queen-visulizer'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone Repo') {
             steps {
-                git 'https://github.com/your-username/your-repo-name.git'
+                git branch: 'main', url: 'https://github.com/Avulakarthik18/N-queen-Visulizer.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "docker build -t $IMAGE_NAME ."
-                }
+                echo "Building Docker image using cache..."
+                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
             }
         }
 
-        stage('Stop and Remove Old Container') {
+        stage('Cleanup Existing Container') {
             steps {
-                script {
-                    sh """
-                        docker stop $CONTAINER_NAME || true
-                        docker rm $CONTAINER_NAME || true
-                    """
-                }
+                bat """
+                for /f %%i in ('docker ps -a -q --filter "name=%CONTAINER_NAME%"') do (
+                    docker stop %%i
+                    docker rm %%i
+                )
+                """
             }
         }
 
         stage('Run New Container') {
             steps {
-                script {
-                    sh "docker run -d --name $CONTAINER_NAME -p $HOST_PORT:89 $IMAGE_NAME"
-                }
+                bat "docker run -d -p 8003:8080 --name %CONTAINER_NAME% %IMAGE_NAME%:%IMAGE_TAG%"
             }
         }
     }
