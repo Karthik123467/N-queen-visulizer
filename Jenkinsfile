@@ -2,41 +2,44 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'my-web-app'
-        DOCKER_PORT = '8088'
+        IMAGE_NAME = "mywebapp"
+        CONTAINER_NAME = "mywebapp-container"
+        PORT = "88"
+        HOST_PORT = "88"
     }
 
     stages {
-        stage('Checkout Repository') {
+        stage('Clone Repository') {
             steps {
-                retry(3) {
-                    git branch: 'main', url: 'https://github.com/Karthik123467/N-queen-visulizer.git'
-                }
+                git 'https://github.com/your-username/your-repo-name.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                    sh "docker build -t $IMAGE_NAME ."
                 }
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Stop and Remove Old Container') {
             steps {
                 script {
-                    sh 'docker ps -q --filter "name=${DOCKER_IMAGE}" | xargs -I {} docker stop {} || true'
-                    sh 'docker ps -a -q --filter "name=${DOCKER_IMAGE}" | xargs -I {} docker rm {} || true'
-                    sh 'docker run -d -p ${DOCKER_PORT}:80 ${DOCKER_IMAGE}'
+                    sh """
+                        docker stop $CONTAINER_NAME || true
+                        docker rm $CONTAINER_NAME || true
+                    """
                 }
             }
         }
-    }
 
-    post {
-        always {
-            sh 'docker ps -a -q --filter "name=${DOCKER_IMAGE}" | xargs -I {} docker rm -f {} || true'
+        stage('Run New Container') {
+            steps {
+                script {
+                    sh "docker run -d --name $CONTAINER_NAME -p $HOST_PORT:89 $IMAGE_NAME"
+                }
+            }
         }
     }
 }
