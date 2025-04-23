@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'my-web-app'
-        DOCKER_PORT = '8080'
+        DOCKER_PORT = '8088'
     }
 
     stages {
