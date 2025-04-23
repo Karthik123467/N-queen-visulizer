@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/Avulakarthik18/N-queen-Visulizer.git'
+                git branch: 'main', url: 'https://github.com/Karthik123467/N-queen-visulizer.git'
             }
         }
 
