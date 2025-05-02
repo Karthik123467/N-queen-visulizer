@@ -1,8 +1,0 @@
-version: '3.8'
-
-services:
-  web:
-    build: .
-    ports:
-      - "89:80"
-    container_name: static_web
